@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Icon } from "@iconify/react";
-import { getProductBySlug } from "@/lib/catalog";
+import { getProducts, getProductBySlug } from "@/lib/catalog";
+import { RelatedSlider } from "@/components/related-slider";
 import { formatMoney } from "@/lib/format";
 import { AddToCart } from "@/components/add-to-cart";
-import { ProductImage } from "@/components/product-image";
+import { ProductGallery } from "@/components/product-gallery";
 import { Reveal } from "@/components/reveal";
 
 type Params = Promise<{ slug: string }>;
@@ -20,19 +21,29 @@ export default async function ProductPage({ params }: { params: Params }) {
   const product = await getProductBySlug(slug);
   if (!product) notFound();
 
+  // Related products: other in-stock items from the same category.
+  const related = (await getProducts())
+    .filter((p) => p.category === product.category && p.id !== product.id)
+    .slice(0, 12);
+
   return (
+    <div className="space-y-16">
     <div className="grid gap-10 md:grid-cols-2">
-      <Reveal className="aspect-square overflow-hidden rounded-3xl border border-slate-200 bg-white">
-        <ProductImage src={product.imageUrl} alt={product.name} className="h-full w-full" />
+      <Reveal>
+        <ProductGallery images={product.imageUrls} alt={product.name} />
       </Reveal>
 
       <Reveal delay={0.1} className="flex flex-col gap-5">
-        <nav className="text-sm text-muted">
-          <Link href="/shop" className="hover:text-ink">Shop</Link>
-          <span className="mx-2">/</span>
-          <Link href={`/shop?category=${encodeURIComponent(product.category)}`} className="hover:text-ink">
+        <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-1.5 text-sm text-muted">
+          <Link href="/" className="hover:text-ink hover:underline">Home</Link>
+          <Icon icon="lucide:chevron-right" className="h-3.5 w-3.5" aria-hidden />
+          <Link href="/shop" className="hover:text-ink hover:underline">Shop</Link>
+          <Icon icon="lucide:chevron-right" className="h-3.5 w-3.5" aria-hidden />
+          <Link href={`/shop?category=${encodeURIComponent(product.category)}`} className="hover:text-ink hover:underline">
             {product.category}
           </Link>
+          <Icon icon="lucide:chevron-right" className="h-3.5 w-3.5" aria-hidden />
+          <span aria-current="page" className="font-medium text-ink">{product.name}</span>
         </nav>
 
         <h1 className="text-3xl font-bold leading-tight">{product.name}</h1>
@@ -55,6 +66,18 @@ export default async function ProductPage({ params }: { params: Params }) {
           <AddToCart product={product} />
         </div>
       </Reveal>
+    </div>
+
+      {related.length > 0 && (
+        <section aria-labelledby="related-heading">
+          <div className="mb-6 flex items-center gap-3">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/plus-medical.svg" alt="" aria-hidden className="h-8 w-8 shrink-0" />
+            <h2 id="related-heading" className="text-2xl font-bold">Related products</h2>
+          </div>
+          <RelatedSlider products={related} />
+        </section>
+      )}
     </div>
   );
 }

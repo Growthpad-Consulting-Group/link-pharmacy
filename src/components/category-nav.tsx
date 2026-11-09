@@ -72,14 +72,14 @@ const MENUS: Menu[] = [
       {
         title: "Manage prescriptions",
         items: [
-          { label: "Upload a prescription", href: "/info/prescriptions", image: "/categories/medicines.svg" },
-          { label: "Refill a prescription", href: "/info/prescriptions", image: "/categories/supplements.svg" },
-          { label: "Transfer a prescription", href: "/info/prescriptions" },
+          { label: "Upload a prescription", href: "/prescriptions", image: "/categories/medicines.svg" },
+          { label: "Refill a prescription", href: "/prescriptions", image: "/categories/supplements.svg" },
+          { label: "Transfer a prescription", href: "/prescriptions" },
         ],
       },
     ],
-    feature: { caption: "Explore Prescriptions", href: "/info/prescriptions", image: "/categories/medicines.svg" },
-    viewAll: { label: "View all prescription services", href: "/info/prescriptions" },
+    feature: { caption: "Explore Prescriptions", href: "/prescriptions", image: "/categories/medicines.svg" },
+    viewAll: { label: "View all prescription services", href: "/prescriptions" },
   },
   {
     label: "Health services",
@@ -229,7 +229,8 @@ export function CategoryNav() {
 
   return (
     <div ref={ref} className="relative bg-brand text-ink shadow-sm">
-      <nav aria-label="Main" className="mx-auto flex max-w-6xl flex-wrap items-center px-4">
+      {/* Scrolls sideways on phones so every category stays reachable; wraps on wider screens. */}
+      <nav aria-label="Main" className="mx-auto flex max-w-6xl items-center overflow-x-auto px-2 [scrollbar-width:none] md:flex-wrap md:overflow-visible md:px-4 [&::-webkit-scrollbar]:hidden">
         {MENUS.map((menu, index) => {
           const isOpen = menu.label === openLabel;
           return (

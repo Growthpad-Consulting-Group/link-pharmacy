@@ -1,13 +1,17 @@
-import { Icon } from "@iconify/react";
+import { PageRibbon } from "@/components/page-ribbon";
+import { BranchList } from "@/components/branch-list";
+import { BRANCHES } from "@/lib/branches";
 
 export const metadata = { title: "Find a pharmacy" };
 
 export default function FindAPharmacyPage() {
   return (
-    <div className="flex flex-col items-center gap-4 rounded-2xl border border-dashed border-slate-300 py-20 text-center">
-      <Icon icon="lucide:map-pin" className="h-12 w-12 text-muted" aria-hidden />
-      <h1 className="text-2xl font-bold">Find a pharmacy</h1>
-      <p className="max-w-sm text-muted">Store locations and opening hours are coming soon.</p>
+    <div className="space-y-10">
+      <PageRibbon crumbs={[{ label: "Home", href: "/" }, { label: "Find a pharmacy" }]} title="Find a pharmacy" />
+      <p className="max-w-2xl text-lg leading-relaxed text-ink/80">
+        Search for the Link Pharmacy nearest you, check opening hours and services, and get directions.
+      </p>
+      <BranchList branches={BRANCHES} />
     </div>
   );
 }

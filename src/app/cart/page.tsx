@@ -1,11 +1,12 @@
 import { CartView } from "@/components/cart-view";
+import { PageRibbon } from "@/components/page-ribbon";
 
 export const metadata = { title: "Cart" };
 
 export default function CartPage() {
   return (
-    <div className="space-y-8">
-      <h1 className="text-3xl font-bold">Your cart</h1>
+    <div className="space-y-10">
+      <PageRibbon crumbs={[{ label: "Home", href: "/" }, { label: "Cart" }]} title="Your cart" />
       <CartView />
     </div>
   );

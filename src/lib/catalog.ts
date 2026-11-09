@@ -10,8 +10,10 @@ export type Product = {
   currency: string;
   stock: number; // units available (qty_available in Odoo)
   category: string;
-  imageUrl: string | null;
+  imageUrl: string | null; // first photo, used on cards
+  imageUrls: string[]; // every photo, used in the product gallery
   sku: string | null;
+  brand: string | null;
 };
 
 export const isDemoMode = !isOdooConfigured();
@@ -45,6 +47,7 @@ type OdooProductRow = {
   qty_available: number;
   categ_id: [number, string] | false;
   description_sale: string | false;
+  product_tmpl_id: [number, string];
 };
 
 async function fetchFromOdoo(ids?: number[]): Promise<Product[]> {
@@ -62,10 +65,25 @@ async function fetchFromOdoo(ids?: number[]): Promise<Product[]> {
       "qty_available",
       "categ_id",
       "description_sale",
+      "product_tmpl_id",
     ],
     limit: 200,
     order: "name asc",
   });
+
+  // Extra photos live on product.image, linked to the product template.
+  const tmplIds = [...new Set(rows.map((r) => r.product_tmpl_id[0]))];
+  const extraRows = tmplIds.length
+    ? await callKw<{ id: number; product_tmpl_id: [number, string] }[]>("product.image", "search_read", [[["product_tmpl_id", "in", tmplIds]]], {
+        fields: ["id", "product_tmpl_id"],
+        order: "sequence asc",
+      })
+    : [];
+  const extrasByTmpl = new Map<number, string[]>();
+  for (const e of extraRows) {
+    const key = e.product_tmpl_id[0];
+    extrasByTmpl.set(key, [...(extrasByTmpl.get(key) ?? []), `${odooConfig.url}/web/image/product.image/${e.id}/image_1024`]);
+  }
 
   return rows.map((row) => {
     const categoryPath = row.categ_id ? row.categ_id[1] : "Uncategorized";
@@ -80,14 +98,19 @@ async function fetchFromOdoo(ids?: number[]): Promise<Product[]> {
       category: categoryPath.split(" / ").pop() ?? categoryPath,
       // Odoo serves product images from /web/image. The record must be readable by the public.
       imageUrl: `${odooConfig.url}/web/image/product.product/${row.id}/image_1024`,
+      imageUrls: [
+        `${odooConfig.url}/web/image/product.product/${row.id}/image_1024`,
+        ...(extrasByTmpl.get(row.product_tmpl_id[0]) ?? []),
+      ],
       sku: row.default_code || null,
+      brand: null, // set from your Odoo brand field when one is configured
     };
   });
 }
 
 /* ----------------------------- Demo source ----------------------------- */
 
-const DEMO_PRODUCTS: Omit<Product, "slug" | "currency" | "imageUrl">[] = [
+const DEMO_PRODUCTS: Omit<Product, "slug" | "currency" | "imageUrl" | "imageUrls" | "brand">[] = [
   { id: 7, name: "Body Lotion", description: "Nourishing daily body lotion for soft, hydrated skin, 400ml.", price: 13.5, stock: 35, category: "Personal Care", sku: "BLT-400" },
   { id: 1, name: "Vitamin C 1000mg Tablets", description: "Daily immune support, 60 tablets per bottle.", price: 12.5, stock: 40, category: "Vitamins & Supplements", sku: "VIT-C-1000" },
   { id: 2, name: "Omega-3 Fish Oil Capsules", description: "High-potency omega-3 for heart and brain health, 90 softgels.", price: 19.99, stock: 25, category: "Vitamins & Supplements", sku: "OMG-3-90" },
@@ -97,12 +120,17 @@ const DEMO_PRODUCTS: Omit<Product, "slug" | "currency" | "imageUrl">[] = [
   { id: 6, name: "Gentle Daily Facial Cleanser", description: "Fragrance-free cleanser suitable for sensitive skin, 150ml.", price: 9.9, stock: 60, category: "Personal Care", sku: "FCL-150" },
 ];
 
-// Product photos in public/products, keyed by demo product id.
-const DEMO_IMAGES: Record<number, string> = {
-  7: "/products/1.png", // Body Lotion
-  1: "/products/2.png", // Vitamin C
-  2: "/products/3.png", // Omega-3
-  3: "/products/4.png", // Hand Sanitizer
+// Demo brands, keyed by demo product id.
+const DEMO_BRANDS: Record<number, string> = {
+  1: "NatureWell", 2: "NatureWell", 3: "CleanCare", 4: "MediTech", 5: "HydraPlus", 6: "Dermaline", 7: "Dermaline",
+};
+
+// Product photos in public/products, keyed by demo product id. The first photo is the main one.
+const DEMO_IMAGES: Record<number, string[]> = {
+  7: ["/products/1.png", "/products/4.png", "/products/2.png"], // Body Lotion
+  1: ["/products/2.png", "/products/1.png", "/products/4.png"], // Vitamin C
+  2: ["/products/3.png", "/products/2.png"], // Omega-3
+  3: ["/products/4.png", "/products/3.png"], // Hand Sanitizer
 };
 
 function fetchDemo(ids?: number[]): Product[] {
@@ -110,7 +138,9 @@ function fetchDemo(ids?: number[]): Product[] {
     ...p,
     slug: makeSlug(p.name, p.id),
     currency: odooConfig.currency,
-    imageUrl: DEMO_IMAGES[p.id] ?? null,
+    imageUrl: DEMO_IMAGES[p.id]?.[0] ?? null,
+    imageUrls: DEMO_IMAGES[p.id] ?? [],
+    brand: DEMO_BRANDS[p.id] ?? null,
   }));
 }
 

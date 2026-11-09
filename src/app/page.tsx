@@ -3,18 +3,10 @@ import Link from "next/link";
 import { Icon } from "@iconify/react";
 import { getProducts } from "@/lib/catalog";
 import { ProductSlider } from "@/components/product-slider";
+import { CATEGORY_TILES } from "@/lib/categories";
 import { Reveal } from "@/components/reveal";
 import { HeroMotion } from "@/components/hero-motion";
 
-// Shop by category tiles. Names must match the product category names used by the shop filter.
-const CATEGORY_TILES = [
-  { name: "Medicines and treatments", image: "/categories/medicines.svg", bg: "#F4F8D5" },
-  { name: "Personal care", image: "/categories/personal-care.svg", bg: "#F7F9F6" },
-  { name: "Baby & kids", image: "/categories/kids.svg", bg: "#F7F9F6" },
-  { name: "Vitamins & Supplements", image: "/categories/supplements.svg", bg: "#F7F9F6" },
-  { name: "Beauty", image: "/categories/beauty.svg", bg: "#F7F9F6" },
-  { name: "Home health care", image: "/categories/home-care.svg", bg: "#F7F9F6" },
-];
 
 const MEDICLINIC_IMAGE = "/consultation-image.webp";
 
@@ -53,7 +45,7 @@ export default async function HomePage() {
               <span aria-hidden className="h-5 w-px bg-ink/30" />
               <Icon icon="lucide:arrow-right" aria-hidden />
             </Link>
-            <Link href="/info/prescriptions" className="inline-flex items-center gap-2 rounded-md bg-white px-6 py-3 font-semibold text-ink shadow-lg transition hover:-translate-y-0.5">
+            <Link href="/prescriptions" className="inline-flex items-center gap-2 rounded-md bg-white px-6 py-3 font-semibold text-ink shadow-lg transition hover:-translate-y-0.5">
               Upload prescription
               <Icon icon="lucide:upload" aria-hidden />
             </Link>
@@ -103,7 +95,7 @@ export default async function HomePage() {
               <Link
                 href={`/shop?category=${encodeURIComponent(tile.name)}`}
                 style={{ backgroundColor: tile.bg }}
-                className="group flex items-stretch justify-between gap-3 overflow-hidden rounded-sm border border-slate-200 p-3 pl-4 transition hover:-translate-y-0.5 hover:border-brand hover:shadow-md"
+                className="group flex flex-col items-stretch justify-between gap-3 sm:flex-row overflow-hidden rounded-sm border border-slate-200 p-3 pl-4 transition hover:-translate-y-0.5 hover:border-brand hover:shadow-md"
               >
                 <span className="flex min-w-0 flex-col items-start justify-between self-stretch py-1">
                   <span className="text-sm font-semibold leading-snug text-ink">{tile.name}</span>
@@ -118,7 +110,7 @@ export default async function HomePage() {
                   src={tile.image}
                   alt=""
                   loading="lazy"
-                  className="h-20 w-20 shrink-0 rounded-sm object-contain"
+                  className="h-16 w-16 shrink-0 self-end rounded-sm object-contain sm:h-20 sm:w-20 sm:self-auto"
                 />
               </Link>
             </Reveal>
@@ -183,10 +175,10 @@ export default async function HomePage() {
       </section>
 
       {/* Insurance partners: title in the first column, one logo per remaining column. */}
-      <section className="grid items-center gap-6 rounded-sm bg-white p-6 sm:p-8 md:grid-cols-6">
-        <h2 className="text-xl font-bold leading-tight text-ink md:col-span-1">Insurance at Mediclinic</h2>
-        {INSURERS.map((name) => (
-          <div key={name} className="flex h-16 items-center justify-center">
+      <section className="grid grid-cols-2 items-center gap-x-6 gap-y-8 rounded-sm bg-white p-6 sm:grid-cols-3 sm:p-8 md:grid-cols-6">
+        <h2 className="col-span-2 text-xl font-bold leading-tight text-ink sm:col-span-3 md:col-span-1">Insurance at Mediclinic</h2>
+        {INSURERS.map((name, i) => (
+          <div key={name} className={`flex h-12 items-center justify-center sm:h-16 ${i === INSURERS.length - 1 ? "col-span-2 sm:col-span-1" : ""}`}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={`/insurance/${name}.svg`} alt={name} loading="lazy" className="max-h-full w-auto max-w-full object-contain" />
           </div>
@@ -201,21 +193,21 @@ export default async function HomePage() {
             <h2 className="text-3xl font-bold leading-tight text-ink sm:text-4xl">Take Link with you.</h2>
             <p className="text-lg text-muted">Download the Link Pharmacy app.</p>
 
-            <div className="mt-2 flex w-fit max-w-full flex-col items-center gap-4 rounded-sm bg-white p-4 sm:flex-row sm:p-5">
+            <div className="mt-2 flex w-fit max-w-full flex-col items-center gap-3 rounded-sm bg-white p-3 sm:flex-row sm:p-3">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/qr-code.svg" alt="QR code to download the app" className="h-24 w-24 shrink-0" />
+              <img src="/qr-code.svg" alt="QR code to download the app" className="h-16 w-16 shrink-0" />
               <div className="flex min-w-0 flex-col items-center gap-2 text-center sm:items-start sm:text-left">
-                <h3 className="text-lg font-bold text-ink">Scan to download</h3>
+                <h3 className="text-base font-bold text-ink">Scan to download</h3>
                 <p className="text-sm text-muted">Or choose your app store</p>
                 <div className="flex flex-wrap items-center justify-center gap-3 sm:justify-start">
                   {/* TODO: replace placeholder hrefs with the real store listing URLs. */}
                   <a href="#">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src="/app-store.svg" alt="Download on the App Store" className="block h-9 w-auto" />
+                    <img src="/app-store.svg" alt="Download on the App Store" className="block h-7 w-auto" />
                   </a>
                   <a href="#">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src="/play-store.svg" alt="Get it on Google Play" className="block h-9 w-auto" />
+                    <img src="/play-store.svg" alt="Get it on Google Play" className="block h-7 w-auto" />
                   </a>
                 </div>
               </div>
@@ -223,7 +215,7 @@ export default async function HomePage() {
           </div>
 
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/app-promotion.svg" alt="Link Pharmacy app" loading="lazy" className="mx-auto h-72 w-auto max-w-full object-contain sm:h-96" />
+          <img src="/app-promotion.svg" alt="Link Pharmacy app" loading="lazy" className="mx-auto h-48 w-auto max-w-full object-contain sm:h-72 lg:h-96" />
         </div>
       </section>
     </div>

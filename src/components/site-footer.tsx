@@ -8,9 +8,10 @@ const FOOTER_COLUMNS = [
   {
     title: "Customer support",
     links: [
-      { label: "Help & contact", href: "#" },
+      { label: "Help & contact", href: "/help" },
       { label: "Shipping & delivery", href: "#" },
       { label: "Returns", href: "#" },
+      { label: "Customer care", href: "/customer-care" },
       { label: "Special orders", href: "#" },
       { label: "Product recalls", href: "#" },
     ],
@@ -20,7 +21,7 @@ const FOOTER_COLUMNS = [
     links: [
       { label: "Find a pharmacy", href: "/find-a-pharmacy" },
       { label: "Shop products", href: "/shop" },
-      { label: "Upload prescription", href: "/info/prescriptions" },
+      { label: "Upload prescription", href: "/prescriptions" },
       { label: "Health services", href: "/info/health-services" },
       { label: "Ear piercings", href: "/info/ear-piercings" },
     ],
@@ -70,8 +71,7 @@ export function SiteFooter() {
           <img src="/link-logo.svg" alt="" className="h-10 w-auto" />
           <p className="mt-4 font-bold">Link Pharmacy</p>
           <p className="mt-2 text-sm text-white/70">Pharmacy shopping and clinic care.</p>
-          {/* TODO: replace placeholder href with the real customer care page. */}
-          <Link href="#" className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-brand hover:text-brand-hover">
+          <Link href="/customer-care" className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-brand hover:text-brand-hover">
             Contact customer care
             <Icon icon="lucide:arrow-right" className="h-4 w-4" aria-hidden />
           </Link>
@@ -94,9 +94,9 @@ export function SiteFooter() {
         <div className="mx-auto grid max-w-6xl items-center gap-4 px-4 py-5 text-center text-sm text-white/70 md:grid-cols-3 md:text-left">
           <p>© 2026 Link Pharmacy Ltd.</p>
           <div className="flex justify-center gap-6">
-            {/* TODO: replace placeholder hrefs with the real policy pages. */}
-            <Link href="#" className="hover:text-white">Privacy policy</Link>
-            <Link href="#" className="hover:text-white">Terms of use</Link>
+            {/* Policy pages live in src/app/privacy and src/app/terms. */}
+            <Link href="/privacy" className="hover:text-white">Privacy policy</Link>
+            <Link href="/terms" className="hover:text-white">Terms of use</Link>
           </div>
           <BackToTop />
         </div>
