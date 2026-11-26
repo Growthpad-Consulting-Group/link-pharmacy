@@ -97,6 +97,10 @@ export function SiteHeader() {
     <>
       <div className="bg-slate-50 text-ink">
         <nav aria-label="Utility" className="mx-auto flex h-9 max-w-6xl items-center justify-end gap-4 px-4 text-xs sm:gap-6 sm:text-sm">
+          <Link href="/blog" aria-label="Health blog" className="flex items-center gap-1.5 font-medium text-ink/80 hover:text-ink hover:underline underline-offset-4">
+            <Icon icon="lucide:book-open" className="h-4 w-4" aria-hidden />
+            <span className="hidden sm:inline">Health blog</span>
+          </Link>
           <Link href="/find-a-pharmacy" aria-label="Find a pharmacy" className="flex items-center gap-1.5 font-medium text-ink/80 hover:text-ink hover:underline underline-offset-4">
             <Icon icon="lucide:map-pin" className="h-4 w-4" aria-hidden />
             <span className="hidden sm:inline">Find a pharmacy</span>
@@ -117,14 +121,6 @@ export function SiteHeader() {
 
         <SearchBar />
 
-        <Link
-          href="/account"
-          aria-label="Account"
-          className="flex shrink-0 items-center gap-2 rounded-md px-2 py-2 text-sm font-medium text-ink hover:bg-slate-100 md:px-3"
-        >
-          <Icon icon="lucide:user-round" className="h-6 w-6" aria-hidden />
-          <span className="hidden md:inline">Account</span>
-        </Link>
 
         <Link
           href="/cart"

@@ -6,6 +6,7 @@ import { Icon } from "@iconify/react";
 import { useCart } from "@/context/cart-context";
 import { formatMoney } from "@/lib/format";
 import { ProductImage } from "./product-image";
+import { Mascot } from "./mascot";
 
 export function CartView() {
   const { items, ready, subtotal, setQuantity, removeItem } = useCart();
@@ -18,6 +19,7 @@ export function CartView() {
     return (
       <div className="mx-auto flex max-w-md flex-col items-center gap-4 rounded-sm border border-dashed border-slate-300 bg-white py-16 text-center">
         <Icon icon="lucide:shopping-bag" className="h-12 w-12 text-muted" aria-hidden />
+        <Mascot size="sm" message="Moyo is waiting for your first item." />
         <h2 className="text-xl font-bold text-ink">Your cart is empty</h2>
         <p className="text-muted">Browse our products and add something you need.</p>
         <Link

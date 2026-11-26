@@ -9,11 +9,11 @@ const FOOTER_COLUMNS = [
     title: "Customer support",
     links: [
       { label: "Help & contact", href: "/help" },
-      { label: "Shipping & delivery", href: "#" },
-      { label: "Returns", href: "#" },
+      { label: "Shipping & delivery", href: "/shipping-delivery" },
+      { label: "Returns", href: "/returns" },
       { label: "Customer care", href: "/customer-care" },
-      { label: "Special orders", href: "#" },
-      { label: "Product recalls", href: "#" },
+      { label: "Special orders", href: "/special-orders" },
+      { label: "Product recalls", href: "/product-recalls" },
     ],
   },
   {
@@ -22,14 +22,13 @@ const FOOTER_COLUMNS = [
       { label: "Find a pharmacy", href: "/find-a-pharmacy" },
       { label: "Shop products", href: "/shop" },
       { label: "Upload prescription", href: "/prescriptions" },
-      { label: "Health services", href: "/info/health-services" },
-      { label: "Ear piercings", href: "/info/ear-piercings" },
+      { label: "Health services", href: "/health-services" },
     ],
   },
   {
     title: "Mediclinic",
     links: [
-      { label: "Clinic services", href: "/info/mediclinic" },
+      { label: "Clinic services", href: "/mediclinic" },
       { label: "Find a clinic", href: "#" },
       { label: "Appointments", href: "#" },
       { label: "Insurance information", href: "#" },
@@ -39,6 +38,7 @@ const FOOTER_COLUMNS = [
   {
     title: "About Link",
     links: [
+      { label: "Health blog", href: "/blog" },
       { label: "Company information", href: "#" },
       { label: "Careers", href: "#" },
       { label: "Become a supplier", href: "#" },
@@ -75,6 +75,27 @@ export function SiteFooter() {
             Contact customer care
             <Icon icon="lucide:arrow-right" className="h-4 w-4" aria-hidden />
           </Link>
+          {/* Placeholder profile URLs: replace with the real Link social accounts before launch. */}
+          <ul className="mt-6 flex items-center gap-3">
+            {[
+              { label: "Facebook", icon: "mdi:facebook", href: "https://www.facebook.com/" },
+              { label: "Instagram", icon: "mdi:instagram", href: "https://www.instagram.com/" },
+              { label: "X (Twitter)", icon: "mdi:twitter", href: "https://x.com/" },
+              { label: "LinkedIn", icon: "mdi:linkedin", href: "https://www.linkedin.com/" },
+            ].map((s) => (
+              <li key={s.label}>
+                <a
+                  href={s.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={s.label}
+                  className="flex h-10 w-10 items-center justify-center rounded-md border border-white/20 text-white transition hover:border-brand hover:text-brand"
+                >
+                  <Icon icon={s.icon} className="h-5 w-5" aria-hidden />
+                </a>
+              </li>
+            ))}
+          </ul>
         </div>
 
         {FOOTER_COLUMNS.map((column) => (

@@ -42,5 +42,6 @@ next-env.d.ts
 
 !.env.example
 
-# Uploaded prescriptions (health data, never commit)
+# Uploaded prescriptions and patient records (health data, never commit)
 .prescription-uploads/
+.portal-data/

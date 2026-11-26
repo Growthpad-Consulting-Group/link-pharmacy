@@ -15,6 +15,13 @@ type Menu = {
   feature: Feature;
   viewAll: MenuItem;
 };
+/** A top-level entry that links straight to a page instead of opening a dropdown. */
+type NavLink = { label: string; href: string };
+type NavEntry = Menu | NavLink;
+
+function isLink(entry: NavEntry): entry is NavLink {
+  return "href" in entry;
+}
 
 /** The category must match the product's category name exactly for the shop filter to find it. */
 function shopItem(label: string, { category = label, image }: { category?: string; image?: string } = {}): MenuItem {
@@ -31,7 +38,7 @@ export const SHOP_CATEGORIES: MenuItem[] = [
 
 const CONSULTATION_IMAGE = "/consultation-image.webp";
 
-const MENUS: Menu[] = [
+const MENUS: NavEntry[] = [
   {
     label: "Shop products",
     columns: [
@@ -66,65 +73,26 @@ const MENUS: Menu[] = [
     feature: { caption: "Explore Personal care", href: shopItem("", { category: "Personal Care" }).href, image: "/categories/personal-care.svg" },
     viewAll: { label: "View all products", href: "/shop" },
   },
-  {
-    label: "Prescriptions",
-    columns: [
-      {
-        title: "Manage prescriptions",
-        items: [
-          { label: "Upload a prescription", href: "/prescriptions", image: "/categories/medicines.svg" },
-          { label: "Refill a prescription", href: "/prescriptions", image: "/categories/supplements.svg" },
-          { label: "Transfer a prescription", href: "/prescriptions" },
-        ],
-      },
-    ],
-    feature: { caption: "Explore Prescriptions", href: "/prescriptions", image: "/categories/medicines.svg" },
-    viewAll: { label: "View all prescription services", href: "/prescriptions" },
-  },
+  { label: "Prescriptions", href: "/prescriptions" },
   {
     label: "Health services",
     columns: [
       {
         title: "In-store care",
         items: [
-          { label: "Pharmacist consultation", href: "/info/health-services", image: CONSULTATION_IMAGE },
-          { label: "Vaccinations", href: "/info/health-services" },
-          { label: "Health checks", href: "/info/health-services", image: "/categories/home-care.svg" },
+          { label: "Pharmacist consultation", href: "/health-services/pharmacist-consultation", image: CONSULTATION_IMAGE },
+          { label: "Vaccinations", href: "/health-services/vaccinations" },
+          { label: "Health checks", href: "/health-services/health-checks", image: "/categories/home-care.svg" },
+          { label: "Blood pressure checks", href: "/health-services/blood-pressure-checks" },
+          { label: "Ear piercings", href: "/health-services/ear-piercings" },
         ],
       },
     ],
-    feature: { caption: "Explore Health services", href: "/info/health-services", image: "/categories/home-care.svg" },
-    viewAll: { label: "View all health services", href: "/info/health-services" },
+    feature: { caption: "Explore Health services", href: "/health-services", image: "/categories/home-care.svg" },
+    viewAll: { label: "View all health services", href: "/health-services" },
   },
-  {
-    label: "Ear Piercings",
-    columns: [
-      {
-        title: "Ear piercings",
-        items: [
-          { label: "Book an ear piercing", href: "/info/ear-piercings" },
-          { label: "Find a pharmacy", href: "/find-a-pharmacy" },
-        ],
-      },
-    ],
-    feature: { caption: "Explore Ear piercings", href: "/info/ear-piercings", icon: "lucide:gem" },
-    viewAll: { label: "View all ear piercing services", href: "/info/ear-piercings" },
-  },
-  {
-    label: "Mediclinic",
-    columns: [
-      {
-        title: "Clinic care",
-        items: [
-          { label: "Book an appointment", href: "/info/mediclinic", image: CONSULTATION_IMAGE },
-          { label: "Our services", href: "/info/mediclinic" },
-          { label: "Clinic hours", href: "/info/mediclinic" },
-        ],
-      },
-    ],
-    feature: { caption: "Explore Mediclinic", href: "/info/mediclinic", image: CONSULTATION_IMAGE },
-    viewAll: { label: "View all clinic services", href: "/info/mediclinic" },
-  },
+  { label: "About us", href: "/about" },
+  { label: "Mediclinic", href: "/mediclinic" },
 ];
 
 function ArrowLink({ item, onSelect }: { item: MenuItem; onSelect: () => void }) {
@@ -209,7 +177,7 @@ function MenuPanel({ menu, onSelect }: { menu: Menu; onSelect: () => void }) {
 export function CategoryNav() {
   const [openLabel, setOpenLabel] = useState<string | null>(null);
   const ref = useRef<HTMLDivElement>(null);
-  const openMenu = MENUS.find((menu) => menu.label === openLabel);
+  const openMenu = MENUS.find((entry): entry is Menu => !isLink(entry) && entry.label === openLabel);
 
   useEffect(() => {
     if (!openLabel) return;
@@ -233,6 +201,18 @@ export function CategoryNav() {
       <nav aria-label="Main" className="mx-auto flex max-w-6xl items-center overflow-x-auto px-2 [scrollbar-width:none] md:flex-wrap md:overflow-visible md:px-4 [&::-webkit-scrollbar]:hidden">
         {MENUS.map((menu, index) => {
           const isOpen = menu.label === openLabel;
+          if (isLink(menu)) {
+            return (
+              <div key={menu.label} className="flex items-center">
+                <Link
+                  href={menu.href}
+                  className="flex items-center gap-1 whitespace-nowrap px-4 py-3 text-sm font-semibold text-ink transition-colors hover:bg-ink/10"
+                >
+                  {menu.label}
+                </Link>
+              </div>
+            );
+          }
           return (
             <div key={menu.label} className="flex items-center">
               <button

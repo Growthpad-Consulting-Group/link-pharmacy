@@ -1,5 +1,8 @@
+import { randomUUID } from "node:crypto";
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { collections } from "@/lib/db/collections";
+import { notify } from "@/lib/notifications/service";
 import { OrderError, placeOrder } from "@/lib/orders";
 
 const checkoutSchema = z.object({
@@ -46,6 +49,29 @@ export async function POST(request: Request) {
 
   try {
     const order = await placeOrder(parsed.data.customer, parsed.data.lines);
+    // Keep a copy in our own database for the admin orders log. Odoo already has the order, so a failure here
+    // must not fail the customer's checkout.
+    await collections()
+      .then(({ orders }) =>
+        orders.insertOne({
+          _id: randomUUID(),
+          reference: order.reference,
+          customer: parsed.data.customer,
+          lines: parsed.data.lines,
+          total: order.total,
+          currency: order.currency,
+          demo: order.demo,
+          createdAt: new Date(),
+        }),
+      )
+      .catch((error: unknown) => console.error("[checkout] could not save order copy:", error));
+    await notify({
+      type: "order",
+      title: `New online order ${order.reference}`,
+      body: `${parsed.data.customer.name} · ${order.total} ${order.currency}`,
+      href: "/admin/orders",
+      permission: "messages:read",
+    });
     return NextResponse.json({ order });
   } catch (err) {
     if (err instanceof OrderError) {
